@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="js/emails.js"></script>
+</head>
+<body>
+<script type="text/javascript"> 
+    $(document).ready(function() {
+   
+        // 'data/send.json' - path to output file
+        $.getJSON('data/sent.json', function(emails) {
+            
+            emails = Emails.filterByDate(emails, new Date('2001'), new Date('2012'));
+
+            var list = '';
+            $.each(emails, function(index, val) {
+                var name = Emails.extractName(val);
+                
+                if (name && name !== null) list += ' ' + (name[0].split(' ').join('~'));
+            });
+
+            console.log(list);
+        });
+    });
+</script>
+</body>
+</html>
