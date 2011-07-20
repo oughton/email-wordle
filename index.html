@@ -1,28 +1,122 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script> 
+<script type="text/javascript" src="js/jquery-ui-1.7.1.custom.min.js"></script> 
+<script type="text/javascript" src="js/selectToUISlider.jQuery.js"></script> 
 <script type="text/javascript" src="js/emails.js"></script>
+<script type="text/javascript" src="js/arbor.js"></script>
+<script type="text/javascript" src="js/raphael.js"></script>
+<script src="js/main.js"></script>
+<link rel="stylesheet" href="css/redmond/jquery-ui-1.7.1.custom.css" type="text/css" /> 
+<link rel="Stylesheet" href="css/ui.slider.extras.css" type="text/css" /> 
+<style type="text/css"> 
+    body {font-size: 62.5%; font-family:"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif; }
+    label {font-weight: normal; float: left; margin-right: .5em; font-size: 1.1em; }
+    select {margin-right: 2em; float: left;}
+    .ui-slider {clear: both; margin-left: 100px; margin-right: 100px;}
+</style> 
+
 </head>
 <body>
 <script type="text/javascript"> 
     $(document).ready(function() {
-   
-        // 'data/send.json' - path to output file
+        var today = new Date('March 31, 2011');
+        var slider = $('select#valueFrom, select#valueTo').selectToUISlider().next();
+
         $.getJSON('data/sent.json', function(emails) {
+            var sent = new SentItems(
+                { start: today, end: new Date('2011') }, 
+                emails
+            );
             
-            emails = Emails.filterByDate(emails, new Date('2001'), new Date('2012'));
+            var sys = arbor.ParticleSystem();
+            sys.parameters({ 
+                stiffness: 8000, 
+                repulsion: 4000, 
+                gravity: true, 
+                dt:0.015, 
+                friction: 0.8
+            })
+            sys.renderer = Renderer("#viewport");
+            
+            var branch = sent.rangeToBranch(
+                { start: today, end: new Date(today.getTime() - 1000*60*60*24) });
+            
+            sys.graft(branch);
 
-            var list = '';
-            $.each(emails, function(index, val) {
-                var name = Emails.extractName(val);
+            slider.bind('slide', function(event, ui) {
+                var min = Math.min(ui.values[0], ui.values[1]); 
+                var max = Math.max(ui.values[0], ui.values[1]);
                 
-                if (name && name !== null) list += ' ' + (name[0].split(' ').join('~'));
+                var minCutoff = new Date(today.getTime() + (min) * -1000*60*60*24);
+                var maxCutoff = new Date(today.getTime() + (max + 1) * -1000*60*60*24);
+                var nodes = [];
+                
+                // prune away periods after the cutoff
+                sys.merge(sent.rangeToBranch({ start: minCutoff, end: maxCutoff }));
             });
-
-            console.log(list);
         });
     });
 </script>
+
+<canvas id="viewport" width="1024" height="500" style="margin-left: 0px;"></canvas>
+
+<select name="valueFrom" id="valueFrom" style="visibility:hidden"> 
+<optgroup label="2011">
+    <option value="today">Mar 31</option>
+    <option value="Mar 30">Mar 30</option>
+    <option value="Mar 29">Mar 29</option>
+    <option value="Mar 27">Mar 28</option>
+    <option value="Mar 26">Mar 27</option>
+    <option value="Mar 25">Mar 26</option>
+    <option value="Mar 24">Mar 25</option>
+    <option value="Mar 23">Mar 24</option>
+    <option value="Mar 22">Mar 23</option>
+    <option value="Mar 21">Mar 22</option>
+    <option value="Mar 20">Mar 21</option>
+    <option value="Mar 19">Mar 20</option>
+    <option value="Mar 18">Mar 19</option>
+    <option value="Mar 17">Mar 18</option>
+    <option value="Mar 16">Mar 17</option>
+    <option value="Mar 15">Mar 16</option>
+    <option value="Mar 14">Mar 15</option>
+    <option value="Mar 13">Mar 14</option>
+    <option value="Mar 13">Mar 13</option>
+    <option value="Mar 12">Mar 12</option>
+    <option value="Mar 11">Mar 11</option>
+    <option value="Mar 10">Mar 10</option>
+    <option value="Mar 9">Mar 9</option>
+    <option value="Mar 8">Mar 8</option>
+    <option value="Mar 7">Mar 7</option>
+    <option value="Mar 6">Mar 6</option>
+    <option value="Mar 5">Mar 5</option>
+    <option value="Mar 4">Mar 4</option>
+    <option value="Mar 3">Mar 3</option>
+    <option value="Mar 2">Mar 2</option>
+    <option value="Mar 1">Mar 1</option>
+</optgroup>
+</select>
+<select name="valueTo" id="valueTo" style="visibility:hidden"> 
+<optgroup label="2011">
+    <option value="today">start</option> 
+    <option value="Feb">start</option> 
+    <option value="Jan">start</option>
+</optgroup>
+<optgroup label="2010">
+    <option value="Dec">start</option> 
+    <option value="Nov">start</option> 
+    <option value="Oct">start</option> 
+    <option value="Sep">start</option> 
+    <option value="Aug">start</option> 
+    <option value="Jul">start</option> 
+    <option value="Jun">start</option> 
+    <option value="May">start</option> 
+    <option value="Apr">start</option> 
+    <option value="Mar">start</option> 
+    <option value="Feb">start</option> 
+    <option value="Jan">start</option> 
+</optgroup>
+</select>
 </body>
 </html>
