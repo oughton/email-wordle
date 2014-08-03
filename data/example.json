@@ -1,0 +1,12 @@
+[
+    {
+        "Date": "Sun, 3 Apr 2011 17:53:59 +1200",
+        "To": "John <john@example.com>",
+        "Subject": "Re: Can not make it tomorrow"
+    },
+    {
+        "Date": "Mon, 4 Apr 2011 10:43:10 +1200",
+        "To": "Sue <sue@example.com>",
+        "Subject": "Re: Can not make it tomorrow"
+    }
+]

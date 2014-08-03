@@ -24,7 +24,7 @@
         var today = new Date('March 31, 2011');
         var slider = $('select#valueFrom, select#valueTo').selectToUISlider().next();
 
-        $.getJSON('data/sent.json', function(emails) {
+        $.getJSON('data/example.json', function(emails) {
             var sent = new SentItems(
                 { start: today, end: new Date('2011') }, 
                 emails
